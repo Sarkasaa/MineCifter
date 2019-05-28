@@ -1,0 +1,2 @@
+# MineCifter
+A Minesweeper Clone
