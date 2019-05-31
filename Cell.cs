@@ -9,11 +9,11 @@ namespace MineCifter {
         public bool IsHidden;
         public int AdjBombs;
 
-        public Cell(Point pos, bool isBomb, bool isMarked, bool isHidden) {
+        public Cell(Point pos, bool isBomb, bool isMarked) {
             this.pos = pos;
             this.IsBomb = isBomb;
             this.IsMarked = isMarked;
-            this.IsHidden = isHidden;
+            this.IsHidden = true;
         }
 
         public void GetBombs(Board board) {
@@ -28,6 +28,11 @@ namespace MineCifter {
                     }
                 }
             }
+        }
+
+        public void InteractCell(Board board) {
+            if (this.IsHidden)
+                this.IsHidden = false;
         }
 
 

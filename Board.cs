@@ -27,7 +27,7 @@ namespace MineCifter {
         public void Fill() {
             for (var y = 0; y < Height; y++) {
                 for (var x = 0; x < Width; x++) {
-                    this.grid[x, y] = new Cell(new Point(x, y), this.rand.Next(0, this.Diff) == 1, false, false);
+                    this.grid[x, y] = new Cell(new Point(x, y), this.rand.Next(0, this.Diff) == 1, false);
                 }
             }
         }
@@ -45,8 +45,8 @@ namespace MineCifter {
             var matrix = Matrix.CreateScale(Scale);
             batch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: matrix);
             foreach (var cell in this.AllCells()) {
-                batch.FillRectangle(cell.pos.ToVector2(), new Size2(1, 1), cell.IsBomb ? Color.DarkRed : Color.Gray);
-                if (!cell.IsBomb && cell.AdjBombs > 0)
+                batch.FillRectangle(cell.pos.ToVector2(), new Size2(1, 1), cell.IsBomb && !cell.IsHidden ? Color.DarkRed : Color.Gray);
+                if (!cell.IsBomb && cell.AdjBombs > 0 && !cell.IsHidden)
                     batch.DrawString(GameImpl.font, cell.AdjBombs.ToString(), cell.pos.ToVector2() + offset, Color.Black, 0, Vector2.Zero, 1 / 32F, SpriteEffects.None, 0);
             }
             batch.End();
