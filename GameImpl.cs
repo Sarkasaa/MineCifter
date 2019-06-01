@@ -34,8 +34,7 @@ namespace MineCifter {
         }
 
         protected override void Update(GameTime gameTime) {
-            if(InputHandler.Update(this.Board) && this.Board.GameOver())
-                this.Board = new Board();
+            InputHandler.Update(this.Board, this);
         }
 
     }

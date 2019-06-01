@@ -8,12 +8,13 @@ using MonoGame.Extended.BitmapFonts;
 namespace MineCifter {
     public class Board {
 
-        public const int Width = 10;
-        public const int Height = 10;
+        public const int Width = 20;
+        public const int Height = 20;
         public Cell[,] grid;
         public Random rand;
-        public int Diff = 3;
+        public int Diff = 7;
         public const float Scale = 32;
+        public bool IsGameOver;
 
         public Board() {
             this.grid = new Cell[Width, Height];
@@ -26,10 +27,19 @@ namespace MineCifter {
 
         public bool GameOver() {
             foreach (var cell in this.AllCells()) {
-                if (cell.IsBomb && !cell.IsHidden)
+                if (cell.IsBomb && !cell.IsHidden) {
+                    this.IsGameOver = true;
                     return true;
+                }
             }
             return false;
+        }
+
+        public void UncoverAllBombs() {
+            foreach (var cell in this.AllCells()) {
+                if (cell.IsBomb)
+                    cell.IsHidden = false;
+            }
         }
 
         public void Fill() {
@@ -48,13 +58,31 @@ namespace MineCifter {
             }
         }
 
+        public void Uncover(int x, int y) {
+            var cell = this.grid[x, y];
+            cell.IsHidden = false;
+            if (cell.AdjBombs < 1) {
+                for (var yOff = -1; yOff <= 1; yOff++) {
+                    for (var xOff = -1; xOff <= 1; xOff++) {
+                        var currPos = new Point(xOff + x, yOff + y);
+                        if (currPos.X < 0 || currPos.X >= Width || currPos.Y < 0 || currPos.Y >= Height)
+                            continue;
+                        var currCell = this.grid[currPos.X, currPos.Y];
+                        if (currCell.IsBomb || !currCell.IsHidden)
+                            continue;
+                        this.Uncover(currPos.X,currPos.Y);
+                    }
+                }
+            }
+        }
 
         public void Draw(SpriteBatch batch, Viewport screen) {
             var offset = new Vector2(8, 0) / 32F;
             var matrix = Matrix.CreateScale(Scale);
             batch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: matrix);
             foreach (var cell in this.AllCells()) {
-                batch.FillRectangle(cell.pos.ToVector2(), new Size2(1, 1), cell.IsBomb && !cell.IsHidden ? Color.DarkRed : Color.Gray);
+                batch.FillRectangle(cell.pos.ToVector2(), new Size2(1, 1), cell.IsHidden ? Color.Gray : cell.IsBomb ? Color.DarkRed : Color.DarkGray);
+                batch.DrawRectangle(cell.pos.ToVector2(), new Size2(1, 1), Color.Black, 1 / 32F);
                 if (!cell.IsBomb && cell.AdjBombs > 0 && !cell.IsHidden)
                     batch.DrawString(GameImpl.font, cell.AdjBombs.ToString(), cell.pos.ToVector2() + offset, Color.Black, 0, Vector2.Zero, 1 / 32F, SpriteEffects.None, 0);
             }
