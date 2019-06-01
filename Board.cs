@@ -24,6 +24,14 @@ namespace MineCifter {
             }
         }
 
+        public bool GameOver() {
+            foreach (var cell in this.AllCells()) {
+                if (cell.IsBomb && !cell.IsHidden)
+                    return true;
+            }
+            return false;
+        }
+
         public void Fill() {
             for (var y = 0; y < Height; y++) {
                 for (var x = 0; x < Width; x++) {
@@ -40,8 +48,9 @@ namespace MineCifter {
             }
         }
 
+
         public void Draw(SpriteBatch batch, Viewport screen) {
-            var offset = new Vector2(8,0)/32F;
+            var offset = new Vector2(8, 0) / 32F;
             var matrix = Matrix.CreateScale(Scale);
             batch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: matrix);
             foreach (var cell in this.AllCells()) {

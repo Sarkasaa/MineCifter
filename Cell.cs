@@ -30,11 +30,6 @@ namespace MineCifter {
             }
         }
 
-        public void InteractCell(Board board) {
-            if (this.IsHidden)
-                this.IsHidden = false;
-        }
-
 
     }
 }
