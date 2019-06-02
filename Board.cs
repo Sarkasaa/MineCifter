@@ -45,7 +45,7 @@ namespace MineCifter {
         public void Fill() {
             for (var y = 0; y < Height; y++) {
                 for (var x = 0; x < Width; x++) {
-                    this.grid[x, y] = new Cell(new Point(x, y), this.rand.Next(0, this.Diff) == 1, false);
+                    this.grid[x, y] = new Cell(new Point(x, y), this.rand.Next(0, this.Diff) == 1);
                 }
             }
         }
@@ -60,6 +60,8 @@ namespace MineCifter {
 
         public void Uncover(int x, int y) {
             var cell = this.grid[x, y];
+            if (cell.IsMarked)
+                return;
             cell.IsHidden = false;
             if (cell.AdjBombs < 1) {
                 for (var yOff = -1; yOff <= 1; yOff++) {
@@ -68,12 +70,19 @@ namespace MineCifter {
                         if (currPos.X < 0 || currPos.X >= Width || currPos.Y < 0 || currPos.Y >= Height)
                             continue;
                         var currCell = this.grid[currPos.X, currPos.Y];
-                        if (currCell.IsBomb || !currCell.IsHidden)
+                        if (currCell.IsBomb || !currCell.IsHidden || currCell.IsMarked)
                             continue;
-                        this.Uncover(currPos.X,currPos.Y);
+                        this.Uncover(currPos.X, currPos.Y);
                     }
                 }
             }
+        }
+
+        public void Mark(int x, int y) {
+            var currCell = this.grid[x, y];
+            if (!currCell.IsHidden)
+                return;
+            currCell.IsMarked = !currCell.IsMarked;
         }
 
         public void Draw(SpriteBatch batch, Viewport screen) {
@@ -81,7 +90,7 @@ namespace MineCifter {
             var matrix = Matrix.CreateScale(Scale);
             batch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: matrix);
             foreach (var cell in this.AllCells()) {
-                batch.FillRectangle(cell.pos.ToVector2(), new Size2(1, 1), cell.IsHidden ? Color.Gray : cell.IsBomb ? Color.DarkRed : Color.DarkGray);
+                batch.FillRectangle(cell.pos.ToVector2(), new Size2(1, 1), cell.IsMarked ? Color.Purple : cell.IsHidden ? Color.Gray : cell.IsBomb ? Color.DarkRed : Color.DarkGray);
                 batch.DrawRectangle(cell.pos.ToVector2(), new Size2(1, 1), Color.Black, 1 / 32F);
                 if (!cell.IsBomb && cell.AdjBombs > 0 && !cell.IsHidden)
                     batch.DrawString(GameImpl.font, cell.AdjBombs.ToString(), cell.pos.ToVector2() + offset, Color.Black, 0, Vector2.Zero, 1 / 32F, SpriteEffects.None, 0);
