@@ -21,7 +21,7 @@ namespace MineCifter {
                 for (var y = -1; y <= 1; y++) {
                     for (var x = -1; x <= 1; x++) {
                         var currPos = this.pos + new Point(x, y);
-                        if (currPos.X < 0 || currPos.X >= Board.Width || currPos.Y < 0 || currPos.Y >= Board.Height)
+                        if (currPos.X < 0 || currPos.X >= board.NWidth || currPos.Y < 0 || currPos.Y >= board.NHeight)
                             continue;
                         if (board.grid[currPos.X, currPos.Y].IsBomb)
                             this.AdjBombs++;

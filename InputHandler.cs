@@ -16,7 +16,7 @@ namespace MineCifter {
                 board.Uncover(coord.X, coord.Y);
 
                 if (board.IsGameOver)
-                    game.Board = new Board();
+                    game.Board = new Board(game.LaunchArgs);
 
                 else if (board.GameOver())
                     board.UncoverAllBombs();

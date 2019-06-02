@@ -8,16 +8,18 @@ using MonoGame.Extended.BitmapFonts;
 namespace MineCifter {
     public class Board {
 
-        public const int Width = 20;
-        public const int Height = 20;
+        public int NWidth;
+        public int NHeight;
         public Cell[,] grid;
         public Random rand;
         public int Diff = 7;
         public const float Scale = 32;
         public bool IsGameOver;
 
-        public Board() {
-            this.grid = new Cell[Width, Height];
+        public Board(Point args) {
+            this.NWidth = args.X;
+            this.NHeight = args.Y;
+            this.grid = new Cell[this.NWidth, this.NHeight];
             this.rand = new Random();
             this.Fill();
             foreach (var cell in this.AllCells()) {
@@ -43,16 +45,16 @@ namespace MineCifter {
         }
 
         public void Fill() {
-            for (var y = 0; y < Height; y++) {
-                for (var x = 0; x < Width; x++) {
+            for (var y = 0; y < this.NHeight; y++) {
+                for (var x = 0; x < this.NWidth; x++) {
                     this.grid[x, y] = new Cell(new Point(x, y), this.rand.Next(0, this.Diff) == 1);
                 }
             }
         }
 
         public IEnumerable<Cell> AllCells() {
-            for (var y = 0; y < Height; y++) {
-                for (var x = 0; x < Width; x++) {
+            for (var y = 0; y < this.NHeight; y++) {
+                for (var x = 0; x < this.NWidth; x++) {
                     yield return this.grid[x, y];
                 }
             }
@@ -67,7 +69,7 @@ namespace MineCifter {
                 for (var yOff = -1; yOff <= 1; yOff++) {
                     for (var xOff = -1; xOff <= 1; xOff++) {
                         var currPos = new Point(xOff + x, yOff + y);
-                        if (currPos.X < 0 || currPos.X >= Width || currPos.Y < 0 || currPos.Y >= Height)
+                        if (currPos.X < 0 || currPos.X >= this.NWidth || currPos.Y < 0 || currPos.Y >= this.NHeight)
                             continue;
                         var currCell = this.grid[currPos.X, currPos.Y];
                         if (currCell.IsBomb || !currCell.IsHidden || currCell.IsMarked)
